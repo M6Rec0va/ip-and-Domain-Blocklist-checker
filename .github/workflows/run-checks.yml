@@ -1,42 +1,47 @@
-name: Run blocklist checks
-
+name: Run checks
 
 on:
-workflow_dispatch:
-schedule:
-- cron: '0 2 * * *' # optional daily run at 02:00 UTC; edit or remove if you don't want schedules
-
+  workflow_dispatch:     # 👈 allows manual runs from the Actions tab
+  push:                  # optional: runs on push to main
+    branches: [ "main" ]
+  schedule:              # optional: runs daily at midnight UTC
+    - cron: "0 0 * * *"
 
 jobs:
-run-checks:
-runs-on: ubuntu-latest
-steps:
-- name: Checkout repo
-uses: actions/checkout@v4
+  scan:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-- name: Set up Python
-uses: actions/setup-python@v4
-with:
-python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-- name: Install dependencies
-run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Run blocklist checks
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          ABUSEIPDB_KEY: ${{ secrets.ABUSEIPDB_KEY }}
+          GSB_KEY: ${{ secrets.GSB_KEY }}
+          URLSCAN_API_KEY: ${{ secrets.URLSCAN_API_KEY }}   # optional if you add urlscan.io
+          OTX_API_KEY: ${{ secrets.OTX_API_KEY }}           # optional if you add AlienVault OTX
+        run: |
+          mkdir -p outputs
+          python src/checker.py \
+            --urls data/urls.txt \
+            --checkers data/checkers.json \
+            --out outputs/results.json \
+            --report outputs/report.txt
 
-
-- name: Run checks
-env:
-# Example: expose secrets referenced by checkers.json here.
-VT_API_KEY: ${{ secrets.VT_API_KEY }}
-ABUSEIPDB_KEY: ${{ secrets.ABUSEIPDB_KEY }}
-run: |
-mkdir -p outputs
-python src/checker.py --urls data/urls.txt --checkers data/checkers.json --out outputs/results.json --report outputs/report.txt
-
-
-- name: Upload results artifact
-uses: actions/upload-artifact@v4
-with:
-name: blocklist-results
-path: outputs/
+      - name: Upload results as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: scan-results
+          path: outputs/*
