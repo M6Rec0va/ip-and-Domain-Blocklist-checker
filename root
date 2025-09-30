@@ -1,0 +1,12 @@
+.ipynb_checkpoints/ (optional)
+.github/
+workflows/
+run-checks.yml
+README.md
+requirements.txt
+src/
+checker.py
+data/
+checkers.example.json
+urls.example.txt
+outputs/ (auto-created by workflow)
