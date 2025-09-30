@@ -4,7 +4,9 @@
     "type": "api",
     "method": "GET",
     "endpoint": "https://www.virustotal.com/api/v3/urls/{encoded_target}",
-    "headers": { "x-apikey": "${VT_API_KEY}" },
+    "headers": {
+      "x-apikey": "${VT_API_KEY}"
+    },
     "response_path": ["data", "attributes", "last_analysis_stats", "malicious"],
     "notes": "Requires VT API key."
   },
@@ -13,7 +15,10 @@
     "type": "api",
     "method": "GET",
     "endpoint": "https://api.abuseipdb.com/api/v2/check?ipAddress={target}",
-    "headers": { "Key": "${ABUSEIPDB_KEY}", "Accept": "application/json" },
+    "headers": {
+      "Key": "${ABUSEIPDB_KEY}",
+      "Accept": "application/json"
+    },
     "response_path": ["data", "abuseConfidenceScore"],
     "notes": "Requires AbuseIPDB key."
   },
@@ -22,14 +27,23 @@
     "type": "api",
     "method": "POST",
     "endpoint": "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_KEY}",
-    "headers": { "Content-Type": "application/json" },
+    "headers": {
+      "Content-Type": "application/json"
+    },
     "post_json_template": {
-      "client": { "clientId": "gh-checker", "clientVersion": "1.0" },
+      "client": {
+        "clientId": "gh-checker",
+        "clientVersion": "1.0"
+      },
       "threatInfo": {
         "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING"],
         "platformTypes": ["ANY_PLATFORM"],
         "threatEntryTypes": ["URL"],
-        "threatEntries": [{ "url": "{target}" }]
+        "threatEntries": [
+          {
+            "url": "{target}"
+          }
+        ]
       }
     }
   }
