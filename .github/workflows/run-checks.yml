@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
@@ -30,8 +30,8 @@ jobs:
           VT_API_KEY: ${{ secrets.VT_API_KEY }}
           ABUSEIPDB_KEY: ${{ secrets.ABUSEIPDB_KEY }}
           GSB_KEY: ${{ secrets.GSB_KEY }}
-          URLSCAN_API_KEY: ${{ secrets.URLSCAN_API_KEY }}   # optional if you add urlscan.io
-          OTX_API_KEY: ${{ secrets.OTX_API_KEY }}           # optional if you add AlienVault OTX
+          URLSCAN_API_KEY: ${{ secrets.URLSCAN_API_KEY }}   # optional if added
+          OTX_API_KEY: ${{ secrets.OTX_API_KEY }}           # optional if added
         run: |
           mkdir -p outputs
           python src/checker.py \
@@ -41,7 +41,9 @@ jobs:
             --report outputs/report.txt
 
       - name: Upload results as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: scan-results
           path: outputs/*
+          compression-level: 6   # default, can be 0–9
+          overwrite: true        # replace artifact if exists
